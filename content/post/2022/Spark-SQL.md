@@ -8,7 +8,7 @@ draft: false
 
 ---
 
-**Tasks**
+**Tasks 1**
 
 Read  database from MySQL into Spark via MySQL connectors (e.g., JDBC or mysql-connector-python)
 
@@ -16,7 +16,7 @@ Read  database from MySQL into Spark via MySQL connectors (e.g., JDBC or mysql-c
 
 1.Install pyspark
 
-check python version: 
+Check python version: 
 
 {{< highlight python >}}
 import sys
@@ -24,18 +24,18 @@ sys.version
 {{< /highlight >}}
 
 
-return: '3.9.13 (main, Aug 25 2022, 23:51:50) [MSC v.1916 64 bit (AMD64)]'
+Return: '3.9.13 (main, Aug 25 2022, 23:51:50) [MSC v.1916 64 bit (AMD64)]'
 
-install pyspark 3.3.0:
+Install pyspark 3.3.0:
 
 {{< highlight python >}}
 pip install pyspark==3.3.0
 {{< /highlight >}}
 
 
-install Java11: https://www.oracle.com/java/technologies/downloads/#java11
+Install Java11: https://www.oracle.com/java/technologies/downloads/#java11
 
-try:
+Try:
 
 {{< highlight python >}}
 from datetime import datetime, date
@@ -52,7 +52,7 @@ df.show(5)
 
 2.Connect to SQL
 
-find spark home:
+Find spark home:
 
 {{< highlight python >}}
 import findspark
@@ -61,11 +61,11 @@ findspark.find()
 {{< /highlight >}}
 
 
-download jar( Platform Independent):https://dev.mysql.com/downloads/connector/j/
+Download jar( Platform Independent):https://dev.mysql.com/downloads/connector/j/
 
 Move mysql-connector.jar to $SPARK_HOME/jars
 
-test:
+Test:
 
 {{< highlight python >}}
 from pyspark import SparkContext,SparkConf
@@ -89,6 +89,35 @@ from tablename \
 where conditions \
             ").show()
 {{< /highlight >}}
+
+**Tasks 2**
+
+Read data (xml file) into Spark
+
+Download jar: spark-xml_version.jar
+Move spark-xml_version.jar to $SPARK_HOME/jars
+
+TEST:
+
+{{< highlight python >}}
+from pyspark import SparkContext, SparkConf
+from pyspark.sql import SQLContext
+
+df_test=spark.read \
+        .format('com.databricks.spark.xml') \
+        .option('rootTag', 'RootTagName') \
+        .option('rowTag', 'RowTagName') \
+        .load('sample.xml')
+{{< /highlight >}}
+
+**Tasks 3**
+
+Conduct queries (listed below) over MAS database and DPLP data uniformly using Spark SQL.
+
+> List all the papers (year and title) of “Divesh Srivastava”from DBLP that are published after his last paper in the MAS database
+
+
+
 
 
 
