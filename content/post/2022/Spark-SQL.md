@@ -18,17 +18,11 @@ Read  database from MySQL into Spark via MySQL connectors (e.g., JDBC or mysql-c
 
 check python version: 
 
-{{< highlight html >}}
+{{< highlight python >}}
 import sys
 sys.version
 {{< /highlight >}}
 
-~~~markdown
-```python{linenos=table}
-import sys
-sys.version
-```
-~~~
 
 return: '3.9.13 (main, Aug 25 2022, 23:51:50) [MSC v.1916 64 bit (AMD64)]'
 
