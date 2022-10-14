@@ -2,9 +2,6 @@
 title: "Spark SQL"
 description: 
 date: 2022-10-14T16:58:12+08:00
-image: 
-math: 
-license: 
 hidden: false
 comments: true
 draft: false
