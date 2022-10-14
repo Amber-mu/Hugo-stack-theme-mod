@@ -19,10 +19,10 @@ Read  database from MySQL into Spark via MySQL connectors (e.g., JDBC or mysql-c
 check python version: 
 
 ~~~markdown
-    ```python
+```python{linenos=table}
 import sys
 sys.version
-    ```
+```
 ~~~
 
 return: '3.9.13 (main, Aug 25 2022, 23:51:50) [MSC v.1916 64 bit (AMD64)]'
@@ -30,9 +30,9 @@ return: '3.9.13 (main, Aug 25 2022, 23:51:50) [MSC v.1916 64 bit (AMD64)]'
 install pyspark 3.3.0:
 
 ~~~markdown
-    ```python
+```python{linenos=table}
 pip install pyspark==3.3.0
-    ```
+```
 ~~~
 
 install Java11: https://www.oracle.com/java/technologies/downloads/#java11
@@ -40,7 +40,7 @@ install Java11: https://www.oracle.com/java/technologies/downloads/#java11
 try:
 
 ~~~markdown
-   ```python
+```python{linenos=table}
 from datetime import datetime, date
 import pandas as pd
 from pyspark.sql import Row
@@ -51,7 +51,7 @@ df = spark.createDataFrame([
     Row(a=4, b=5., c='string3', d=date(2000, 3, 1), e=datetime(2000, 1, 3, 12, 0))
 ])
 df.show(5)
-    ```
+```
 ~~~
 
 2.Connect to SQL
@@ -59,11 +59,11 @@ df.show(5)
 find spark home:
 
 ~~~markdown
-    ```python
+```python{linenos=table}
 import findspark
 findspark.init()
 findspark.find()
-    ```
+```
 ~~~
 
 download jar( Platform Independent):https://dev.mysql.com/downloads/connector/j/
@@ -73,7 +73,7 @@ Move mysql-connector.jar to $SPARK_HOME/jars
 test:
 
 ~~~markdown
-    ```python
+```python{linenos=table}
 from pyspark import SparkContext,SparkConf
 from pyspark.sql import SparkSession
 
@@ -95,7 +95,7 @@ from tablename \
 where conditions \
             ").show()
 
-    ```
+```
 ~~~
 
 
