@@ -28,18 +28,16 @@ return: '3.9.13 (main, Aug 25 2022, 23:51:50) [MSC v.1916 64 bit (AMD64)]'
 
 install pyspark 3.3.0:
 
-~~~markdown
-```python{linenos=table}
+{{< highlight python >}}
 pip install pyspark==3.3.0
-```
-~~~
+{{< /highlight >}}
+
 
 install Java11: https://www.oracle.com/java/technologies/downloads/#java11
 
 try:
 
-~~~markdown
-```python{linenos=table}
+{{< highlight python >}}
 from datetime import datetime, date
 import pandas as pd
 from pyspark.sql import Row
@@ -50,20 +48,18 @@ df = spark.createDataFrame([
     Row(a=4, b=5., c='string3', d=date(2000, 3, 1), e=datetime(2000, 1, 3, 12, 0))
 ])
 df.show(5)
-```
-~~~
+{{< /highlight >}}
 
 2.Connect to SQL
 
 find spark home:
 
-~~~markdown
-```python{linenos=table}
+{{< highlight python >}}
 import findspark
 findspark.init()
 findspark.find()
-```
-~~~
+{{< /highlight >}}
+
 
 download jar( Platform Independent):https://dev.mysql.com/downloads/connector/j/
 
@@ -71,8 +67,7 @@ Move mysql-connector.jar to $SPARK_HOME/jars
 
 test:
 
-~~~markdown
-```python{linenos=table}
+{{< highlight python >}}
 from pyspark import SparkContext,SparkConf
 from pyspark.sql import SparkSession
 
@@ -93,9 +88,7 @@ spark.sql("select * \
 from tablename \
 where conditions \
             ").show()
-
-```
-~~~
+{{< /highlight >}}
 
 
 
