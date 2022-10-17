@@ -8,7 +8,7 @@ draft: false
 
 ---
 
-**Tasks 1**
+**Task 1**
 
 Read  database from MySQL into Spark via MySQL connectors (e.g., JDBC or mysql-connector-python)
 
@@ -90,7 +90,7 @@ where conditions \
             ").show()
 {{< /highlight >}}
 
-**Tasks 2**
+**Task 2**
 
 Read data (xml file) into Spark
 
@@ -110,14 +110,67 @@ df_test=spark.read \
         .load('sample.xml')
 {{< /highlight >}}
 
-**Tasks 3**
+**Task 3**
 
 Conduct queries (listed below) over MAS database and DPLP data uniformly using Spark SQL.
 
 > List all the papers (year and title) of “Divesh Srivastava”from DBLP that are published after his last paper in the MAS database
 
+1.Find the last paper in the MAS:
 
+Try:
+{{< highlight python >}}
+author.createOrReplaceTempView('author')
+writes.createOrReplaceTempView('writes')
+publication.createOrReplaceTempView('publication')
+spark.sql("SELECT year FROM publication WHERE pid IN (SELECT pid FROM writes WHERE aid = (SELECT aid FROM author WHERE name = 'Divesh Srivastava') )ORDER BY year DESC LIMIT 1").show()
+{{< /highlight >}}
+Error：[WinError 10061] 由于目标计算机积极拒绝，无法连接
 
+Try:
+{{< highlight python >}}
+author.createOrReplaceTempView('author')
+writes.createOrReplaceTempView('writes')
+publication.createOrReplaceTempView('publication')
+aid=spark.sql("SELECT aid FROM author WHERE name = 'Divesh Srivastava'")
+aid=aid.toPandas()
+year=spark.sql("SELECT year FROM publication WHERE pid IN (SELECT pid FROM writes WHERE aid = "+str(aid.aid[0])+")ORDER BY year DESC LIMIT 1")
+year=year.toPandas()
+{{< /highlight >}}
+
+2.Find papers in the DBLP:
+
+Try:
+{{< highlight python >}}
+dblp=spark.read \
+        .format('com.databricks.spark.xml') \
+        .option('rootTag', 'dblp') \
+        .option('rowTag', 'article') \
+        .load('dblp.xml')
+{{< /highlight >}}
+
+Try:
+{{< highlight python >}}
+import xml.etree.ElementTree as ET
+import pandas as pd
+import codecs
+
+with codecs.open('dblp.xml', 'r', encoding='utf8') as f:
+    tt = f.read()
+
+def xml2df(xml_data):
+    root = ET.XML(xml_data)
+    all_records = []
+    for i, child in enumerate(root):
+        record = {}
+        for sub_child in child:
+            record[sub_child.tag] = sub_child.text
+        all_records.append(record)
+    return pd.DataFrame(all_records)
+
+df_xml1 = xml2df(tt)
+{{< /highlight >}}
+OverflowError: size does not fit in an int
 
 
 
@@ -126,3 +179,5 @@ Refrence
 https://www.cjavapy.com/article/81/
 
 https://juejin.cn/post/6847902219627397127
+
+https://stackoverflow.com/questions/52968877/read-xml-file-to-pandas-dataframe
