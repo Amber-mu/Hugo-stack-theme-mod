@@ -210,6 +210,7 @@ sparkDF=spark.createDataFrame(data)
 sparkDF.printSchema()
 sparkDF.show()
 {{< /highlight >}}
+Return
 Schema：
 root
  |-- author: array (nullable = true)
@@ -220,11 +221,9 @@ root
 Py4JJavaError: An error occurred while calling o54.showString.
 ...??? Seems like something wrong with enviorment. 
 Fix that by setting environment variables as follows:
-{{< /highlight >}}
 PYSPARK_DRIVER_PYTHON=jupyter
 PYSPARK_DRIVER_PYTHON_OPTS=notebook
 PYSPARK_PYTHON=python
-{{< /highlight >}}
 
 
 
