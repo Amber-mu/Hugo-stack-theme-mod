@@ -151,7 +151,7 @@ dblp=spark.read \
 Too many errors in data...
 
 Try:
-{{< highlight python >}}
+
 import xml.etree.ElementTree as ET
 import pandas as pd
 import codecs
@@ -170,12 +170,11 @@ def xml2df(xml_data):
     return pd.DataFrame(all_records)
 
 df_xml1 = xml2df(tt)
-{{< /highlight >}}
+
 OverflowError: size does not fit in an int
 
-
 Try:
-{{< highlight python >}}
+
 import lxml
 from lxml import etree as et
 import io
@@ -209,7 +208,7 @@ data.rename(columns={0:'author',1:'title',2:'year'},inplace=True)
 sparkDF=spark.createDataFrame(data) 
 sparkDF.printSchema()
 sparkDF.show()
-{{< /highlight >}}
+
 Return
 Schema：
 root
@@ -217,7 +216,7 @@ root
  |    |-- element: string (containsNull = true)
  |-- title: string (nullable = true)
  |-- year: string (nullable = true)
- 
+
 Py4JJavaError: An error occurred while calling o54.showString.
 ...??? Seems like something wrong with enviorment. 
 Fix that by setting environment variables as follows:
