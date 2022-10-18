@@ -173,7 +173,7 @@ df_xml1 = xml2df(tt)
 {{< /highlight >}}
 OverflowError: size does not fit in an int
 
-Try:
+Try it using Sample.xml:
 {{< highlight python >}}
 import lxml
 from lxml import etree as et
@@ -221,6 +221,51 @@ PYSPARK_DRIVER_PYTHON_OPTS=notebook
 PYSPARK_PYTHON=python
 {{< /highlight >}}
 
+It works well on Sample.xml
+
+When it comes to DBLP.xml:
+{{< highlight python >}}
+sparkDF=spark.createDataFrame(data) 
+{{< /highlight >}}
+TypeError: field author: Can not merge type <class 'pyspark.sql.types.ArrayType'> and <class 'pyspark.sql.types.StringType'>
+
+Try:
+{{< highlight python >}}
+import numpy as np
+for i in data.columns:
+    data[i].iloc[np.where(data[i].isna() == True)] = "Nan values"
+from pyspark.sql.types import *
+df_schema = StructType([StructField("author", ArrayType(StringType()), True)\
+                       ,StructField("title", StringType(), True)\
+                       ,StructField("year", StringType(), True)])
+#rdd = spark.sparkContext.parallelize(data)
+#Pandas dataframes can not direct convert to rdd. 
+sparkDF=spark.createDataFrame(rdd,df_schema) 
+sparkDF.printSchema()
+{{< /highlight >}}
+
+Something wrong with my data... Add an if with loading 'info':
+{{< highlight python >}}
+if(len(info)==3):
+    info_list.append(info)
+{{< /highlight >}}
+
+Find the papers：
+{{< highlight python >}}
+from pyspark.sql import functions as F
+
+df_result = sparkDF.filter(F.array_contains(F.col('author'), 'Divesh Srivastava') & (sparkDF.year>(int(year.year[0])))).show()
+{{< /highlight >}}
+Supper slow...
+Set the PySpark executor memory:
+{{< highlight python >}}
+import os
+memory = '30g'
+pyspark_submit_args = ' --driver-memory ' + memory + ' pyspark-shell'
+os.environ["PYSPARK_SUBMIT_ARGS"] = pyspark_submit_args
+{{< /highlight >}}
+
+> List the author(s) (names) who have collaborated most (in terms of number of publications) with “Divesh Srivastava”other than himself based on MAS database and DBLP data. The result may contain more than one author if they coauthored with him for same number of papers.
 
 
 **Refrence**
@@ -234,3 +279,9 @@ https://stackoverflow.com/questions/52968877/read-xml-file-to-pandas-dataframe
 https://stackoverflow.com/questions/49614725/entity-ouml-error-while-using-lxml-to-parse-dblp-data
 
 https://stackoverflow.com/questions/56213955/python-worker-failed-to-connect-back-in-pyspark-or-spark-version-2-3-1
+
+https://sparkbyexamples.com/pyspark/pyspark-structtype-and-structfield/
+
+https://stackoverflow.com/questions/74106274/arraytypestringtype-can-not-accept-object-sql-data-system-for-vse-a-relati
+
+https://stackoverflow.com/questions/51601478/setting-pyspark-executor-memory-and-executor-core-within-jupyter-notebook
