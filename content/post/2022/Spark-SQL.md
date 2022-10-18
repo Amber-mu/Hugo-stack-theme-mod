@@ -209,20 +209,17 @@ sparkDF=spark.createDataFrame(data)
 sparkDF.printSchema()
 sparkDF.show()
 
-Return
-Schema：
-root
- |-- author: array (nullable = true)
- |    |-- element: string (containsNull = true)
- |-- title: string (nullable = true)
- |-- year: string (nullable = true)
 
 Py4JJavaError: An error occurred while calling o54.showString.
+
 ...??? Seems like something wrong with enviorment. 
+
 Fix that by setting environment variables as follows:
+{{< highlight python >}}
 PYSPARK_DRIVER_PYTHON=jupyter
 PYSPARK_DRIVER_PYTHON_OPTS=notebook
 PYSPARK_PYTHON=python
+{{< /highlight >}}
 
 
 
