@@ -18,26 +18,26 @@ Read  database from MySQL into Spark via MySQL connectors (e.g., JDBC or mysql-c
 
 Check python version: 
 
-{{< highlight python >}}
+
 import sys
 sys.version
-{{< /highlight >}}
+
 
 
 Return: '3.9.13 (main, Aug 25 2022, 23:51:50) [MSC v.1916 64 bit (AMD64)]'
 
 Install pyspark 3.3.0:
 
-{{< highlight python >}}
+
 pip install pyspark==3.3.0
-{{< /highlight >}}
+
 
 
 Install Java11: https://www.oracle.com/java/technologies/downloads/#java11
 
 Try:
 
-{{< highlight python >}}
+
 from datetime import datetime, date
 import pandas as pd
 from pyspark.sql import Row
@@ -48,17 +48,17 @@ df = spark.createDataFrame([
     Row(a=4, b=5., c='string3', d=date(2000, 3, 1), e=datetime(2000, 1, 3, 12, 0))
 ])
 df.show(5)
-{{< /highlight >}}
+
 
 2.Connect to SQL
 
 Find spark home:
 
-{{< highlight python >}}
+
 import findspark
 findspark.init()
 findspark.find()
-{{< /highlight >}}
+
 
 
 Download jar( Platform Independent):https://dev.mysql.com/downloads/connector/j/
@@ -67,7 +67,7 @@ Move mysql-connector.jar to $SPARK_HOME/jars
 
 Test:
 
-{{< highlight python >}}
+
 from pyspark import SparkContext,SparkConf
 from pyspark.sql import SparkSession
 
@@ -88,7 +88,7 @@ spark.sql("select * \
 from tablename \
 where conditions \
             ").show()
-{{< /highlight >}}
+
 
 **Task 2**
 
@@ -99,7 +99,7 @@ Move spark-xml_version.jar to $SPARK_HOME/jars
 
 TEST:
 
-{{< highlight python >}}
+
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext
 
@@ -108,7 +108,7 @@ df_test=spark.read \
         .option('rootTag', 'RootTagName') \
         .option('rowTag', 'RowTagName') \
         .load('sample.xml')
-{{< /highlight >}}
+
 
 **Task 3**
 
@@ -119,16 +119,16 @@ Conduct queries (listed below) over MAS database and DPLP data uniformly using S
 1.Find the last paper in the MAS:
 
 Try:
-{{< highlight python >}}
+
 author.createOrReplaceTempView('author')
 writes.createOrReplaceTempView('writes')
 publication.createOrReplaceTempView('publication')
 spark.sql("SELECT year FROM publication WHERE pid IN (SELECT pid FROM writes WHERE aid = (SELECT aid FROM author WHERE name = 'Divesh Srivastava') )ORDER BY year DESC LIMIT 1").show()
-{{< /highlight >}}
+
 Error：[WinError 10061] 由于目标计算机积极拒绝，无法连接
 
 Try:
-{{< highlight python >}}
+
 author.createOrReplaceTempView('author')
 writes.createOrReplaceTempView('writes')
 publication.createOrReplaceTempView('publication')
@@ -136,18 +136,18 @@ aid=spark.sql("SELECT aid FROM author WHERE name = 'Divesh Srivastava'")
 aid=aid.toPandas()
 year=spark.sql("SELECT year FROM publication WHERE pid IN (SELECT pid FROM writes WHERE aid = "+str(aid.aid[0])+")ORDER BY year DESC LIMIT 1")
 year=year.toPandas()
-{{< /highlight >}}
+
 
 2.Find papers in the DBLP:
 
 Try:
-{{< highlight python >}}
+
 dblp=spark.read \
         .format('com.databricks.spark.xml') \
         .option('rootTag', 'dblp') \
         .option('rowTag', 'article') \
         .load('dblp.xml')
-{{< /highlight >}}
+
 Too many errors in data...
 
 Try:
