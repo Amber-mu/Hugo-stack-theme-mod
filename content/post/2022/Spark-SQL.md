@@ -148,6 +148,7 @@ dblp=spark.read \
         .option('rowTag', 'article') \
         .load('dblp.xml')
 {{< /highlight >}}
+Too many errors in data...
 
 Try:
 {{< highlight python >}}
@@ -173,11 +174,66 @@ df_xml1 = xml2df(tt)
 OverflowError: size does not fit in an int
 
 
+Try:
+{{< highlight python >}}
+import lxml
+from lxml import etree as et
+import io
+import chardet
+import pandas as pd
 
-Refrence
+fn = 'sample.xml'
+info=[]
+info_list=[]
+for event, elem in lxml.etree.iterparse(fn, load_dtd=True):
+    if elem.tag not in ['article', 'inproceedings', 'proceedings']:
+        continue
+    info=[]
+    author=[]
+    for i in elem:
+        if(i.tag=='author'):
+            author.append(i.text)
+            if(len(info) == 0):
+                info.append(author)
+            else:
+                info[0]=author
+        if(i.tag=='title' or i.tag=='year'):
+            info.append(i.text)
+    info_list.append(info)
+    elem.clear()
+	
+from pandas.core.frame import DataFrame
+data=DataFrame(info_list)
+data.rename(columns={0:'author',1:'title',2:'year'},inplace=True)
+
+sparkDF=spark.createDataFrame(data) 
+sparkDF.printSchema()
+sparkDF.show()
+{{< /highlight >}}
+Schema：
+root
+ |-- author: array (nullable = true)
+ |    |-- element: string (containsNull = true)
+ |-- title: string (nullable = true)
+ |-- year: string (nullable = true)
+ 
+Py4JJavaError: An error occurred while calling o54.showString.
+...??? Seems like something wrong with enviorment. 
+Fix that by setting environment variables as follows:
+{{< /highlight >}}
+PYSPARK_DRIVER_PYTHON=jupyter
+PYSPARK_DRIVER_PYTHON_OPTS=notebook
+PYSPARK_PYTHON=python
+{{< /highlight >}}
+
+**Refrence**
 
 https://www.cjavapy.com/article/81/
 
 https://juejin.cn/post/6847902219627397127
 
 https://stackoverflow.com/questions/52968877/read-xml-file-to-pandas-dataframe
+
+https://stackoverflow.com/questions/49614725/entity-ouml-error-while-using-lxml-to-parse-dblp-data
+
+https://stackoverflow.com/questions/56213955/python-worker-failed-to-connect-back-in-pyspark-or-spark-version-2-3-1
