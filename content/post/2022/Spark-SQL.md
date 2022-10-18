@@ -266,8 +266,8 @@ os.environ["PYSPARK_SUBMIT_ARGS"] = pyspark_submit_args
 {{< /highlight >}}
 
 > List the author(s) (names) who have collaborated most (in terms of number of publications) with “Divesh Srivastava”other than himself based on MAS database and DBLP data. The result may contain more than one author if they coauthored with him for same number of papers.
-
-
+> List the number of publications of “Divesh Srivastava”each year based on MAS database and DBLP data. Duplicate papers in both MAS and DBLP should be counted only once in the result.
+> Find papers published in 2021 that are relevant to keyword query ‘self attention transformer’ (or 'self-attention transformer'). Treat each paper title as one document and rank them using tf-idf. Return the top 10 relevant papers (title, authors, journal/conference and year).  
 **Refrence**
 
 https://www.cjavapy.com/article/81/
