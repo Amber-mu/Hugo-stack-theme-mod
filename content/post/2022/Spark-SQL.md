@@ -430,3 +430,9 @@ https://www.geeksforgeeks.org/merge-two-dataframes-in-pyspark/
 https://sparkbyexamples.com/pyspark/pyspark-distinct-to-drop-duplicates/
 
 https://sparkbyexamples.com/pyspark/pyspark-groupby-count-explained/
+
+https://medium.com/analytics-vidhya/build-your-semantic-document-search-engine-with-tf-idf-and-google-use-c836bf5f27fb
+
+https://medium.com/@rezandry/find-most-relevance-text-data-using-pyspark-with-tf-idf-a4269a13e59
+
+https://mofanpy.com/tutorials/machine-learning/nlp/tfidf-more
