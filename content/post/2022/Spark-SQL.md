@@ -266,8 +266,122 @@ os.environ["PYSPARK_SUBMIT_ARGS"] = pyspark_submit_args
 {{< /highlight >}}
 
 > List the author(s) (names) who have collaborated most (in terms of number of publications) with “Divesh Srivastava”other than himself based on MAS database and DBLP data. The result may contain more than one author if they coauthored with him for same number of papers.
+
+{{< highlight python >}}
+query = "SELECT name,aid,pub\
+         FROM author \
+         INNER JOIN\
+         (SELECT DISTINCT first(aid) AS aid,COUNT(pid) AS pub\
+         FROM writes\
+         INNER JOIN\
+         (SELECT pid FROM writes WHERE aid = "+str(aid.aid[0])+")AS h\
+         USING(pid)\
+         GROUP BY aid) AS t USING(aid)\
+         WHERE name!='Divesh Srivastava'"
+		 
+aids=spark.sql(query)
+aids=aids.toPandas()
+{{< /highlight >}}
+
+
+
+{{< highlight python >}}
+df= sparkDF.filter(F.array_contains(F.col('author'), 'Divesh Srivastava') & (sparkDF.year>(int(year.year[0]))))
+
+from pyspark.sql import functions as F
+
+a=df.withColumn("atr", F.expr("""transform(array_distinct(author),x->aggregate(author,0,(acc,y)->\
+                               IF(y=x, acc+1,acc)))"""))\
+  .withColumn("zip", F.explode(F.arrays_zip(F.array_distinct("author"),("atr"))))\
+  .select("zip.*").withColumnRenamed("0","elements")\
+  .groupBy("elements").agg(F.sum("atr").alias("sum"))\
+  .collect()
+
+dict={a[i][0]: a[i][1] for i in range(len(a))} 
+df_aids = pd.DataFrame(columns=['name','pub']) 
+for i in range(len(a)):
+    df_aids.loc[len(df_aids.index)] = [a[i][0],a[i][1]]
+{{< /highlight >}}
+
+However there are so many duplicate data in these two databases:
+{{< highlight python >}}
+s1 = pd.merge(aids, df_aids, how='inner', on=['name'])
+
+     name	          pub_x pub_y
+0	Howard J. Karloff	4	1
+1	Bojian Xu	1	5
+2	Beng Chin Ooi	7	1
+3	Albert Angel	2	1
+4	Yannis Velegrakis	4	2
+5	Vladislav Shkapenyuk	2	3
+6	Songtao Guo	1	2
+7	Flip Korn	22	8
+8	Xin Luna Dong	3	24
+9	Theodore Johnson	7	5
+10	Gerhard Weikum	2	1
+11	Lukasz Golab	7	24
+12	Qing Zhang	4	2
+13	Vassilis J. Tsotras	5	1
+14	Nikos Sarkas	2	1
+15	Nick Koudas	76	5
+16	Monica Scannapieco	1	1
+17	Entong Shen	3	2
+18	Graham Cormode	21	19
+19	Ninghui Li	1	1
+20	Anish Das Sarma	2	2
+21	Tamraparni Dasu	1	12
+22	Barna Saha	1	13
+{{< /highlight >}}
+
+So I changed my method:
+{{< highlight python >}}
+query = "SELECT name,title\
+         FROM publication\
+         INNER JOIN\
+         (SELECT name,pid\
+         FROM author \
+         INNER JOIN\
+         (SELECT DISTINCT aid,pid\
+         FROM writes\
+         INNER JOIN\
+         (SELECT pid FROM writes WHERE aid = "+str(aid.aid[0])+")AS h\
+         USING(pid)\
+         ) AS t USING(aid)\
+         WHERE name!='Divesh Srivastava') AS r\
+         USING (pid)"
+aids=spark.sql(query)
+
+df= sparkDF.filter(F.array_contains(F.col('author'), 'Divesh Srivastava'))
+from pyspark.sql.functions import explode
+df2 = df.select(df.title,explode(df.author))
+df2 = df2.selectExpr("col as name","title as title")
+
+from pyspark.sql import SparkSession
+import functools
+def unionAll(dfs):
+    return functools.reduce(lambda df1, df2: df1.union(df2.select(df1.columns)), dfs)
+    spark = SparkSession.builder.getOrCreate()
+    
+unioned_df = unionAll([aids, df2])
+
+unioned_df = unioned_df.distinct()
+unioned_df = unioned_df.groupBy("name").count()
+unioned_df.show()
+unioned_df=unioned_df.filter(unioned_df.name!='Divesh Srivastava')
+
+import pyspark.sql.functions as f
+unioned_df.join(unioned_df.agg(f.max('count').alias('count')),on='count',how='leftsemi').show()
+{{< /highlight >}}
+
+
 > List the number of publications of “Divesh Srivastava”each year based on MAS database and DBLP data. Duplicate papers in both MAS and DBLP should be counted only once in the result.
+
+
+
 > Find papers published in 2021 that are relevant to keyword query ‘self attention transformer’ (or 'self-attention transformer'). Treat each paper title as one document and rank them using tf-idf. Return the top 10 relevant papers (title, authors, journal/conference and year).  
+
+
+
 **Refrence**
 
 https://www.cjavapy.com/article/81/
@@ -285,3 +399,13 @@ https://sparkbyexamples.com/pyspark/pyspark-structtype-and-structfield/
 https://stackoverflow.com/questions/74106274/arraytypestringtype-can-not-accept-object-sql-data-system-for-vse-a-relati
 
 https://stackoverflow.com/questions/51601478/setting-pyspark-executor-memory-and-executor-core-within-jupyter-notebook
+
+https://stackoverflow.com/questions/61682833/counting-instaces-of-values-across-lists-within-a-single-column
+
+https://sparkbyexamples.com/pyspark/pyspark-explode-array-and-map-columns-to-rows/
+
+https://www.geeksforgeeks.org/merge-two-dataframes-in-pyspark/
+
+https://sparkbyexamples.com/pyspark/pyspark-distinct-to-drop-duplicates/
+
+https://sparkbyexamples.com/pyspark/pyspark-groupby-count-explained/
