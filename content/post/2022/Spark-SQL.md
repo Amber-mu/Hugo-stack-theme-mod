@@ -376,7 +376,28 @@ unioned_df.join(unioned_df.agg(f.max('count').alias('count')),on='count',how='le
 
 > List the number of publications of “Divesh Srivastava”each year based on MAS database and DBLP data. Duplicate papers in both MAS and DBLP should be counted only once in the result.
 
+{{< highlight python >}}
+df_all = sparkDF.filter(F.array_contains(F.col('author'), 'Divesh Srivastava'))
+query_all = "SELECT title,year\
+             FROM publication\
+             WHERE pid IN\
+             (SELECT pid FROM writes WHERE aid = "+str(aid.aid[0])+")"
+pub_all=spark.sql(query_all)
 
+df_all=df_all.drop("author")
+
+from pyspark.sql import SparkSession
+import functools
+def unionAll(dfs):
+    return functools.reduce(lambda df1, df2: df1.union(df2.select(df1.columns)), dfs)
+    spark = SparkSession.builder.getOrCreate()
+    
+unioned_df = unionAll([df_all, pub_all])
+unioned_df = unioned_df.distinct()
+
+unioned_df = unioned_df.groupBy("year").count()
+unioned_df.show()
+{{< /highlight >}}
 
 > Find papers published in 2021 that are relevant to keyword query ‘self attention transformer’ (or 'self-attention transformer'). Treat each paper title as one document and rank them using tf-idf. Return the top 10 relevant papers (title, authors, journal/conference and year).  
 
