@@ -401,6 +401,87 @@ unioned_df.show()
 
 > Find papers published in 2021 that are relevant to keyword query ‘self attention transformer’ (or 'self-attention transformer'). Treat each paper title as one document and rank them using tf-idf. Return the top 10 relevant papers (title, authors, journal/conference and year).  
 
+Read files:
+{{< highlight python >}}
+import lxml
+from lxml import etree as et
+import io
+import chardet
+import pandas as pd
+
+fn = 'dblp.xml'
+info=[]
+info_list=[]
+for event, elem in lxml.etree.iterparse(fn, load_dtd=True):
+    if elem.tag not in ['article', 'inproceedings']:
+        continue
+    info=[0]*4
+    author=[]
+    for i in elem:
+        if(i.tag=='author'):
+            author.append(i.text)
+            info[0]=author
+        if(i.tag=='title'):
+            info[1]=i.text
+        if(i.tag=='year'):
+            info[2]=i.text
+        if(i.tag=='journal'):
+            info[3]=i.text
+        elif(i.tag=='booktitle'):
+            info[3]=i.text
+    if(len(info)==4):
+        info_list.append(info)
+    elem.clear()
+{{< /highlight >}}
+
+
+{{< highlight python >}}
+from pandas.core.frame import DataFrame
+data=DataFrame(info_list)
+data.rename(columns={0:'author',1:'title',2:'year',3:'journal/conference'},inplace=True)
+data = data.astype({'year':'int'})
+df_clear = data.drop(data[data['journal/conference']==0].index)
+df_clear = df_clear.drop(df_clear[df_clear['author']==0].index)
+df_clear = df_clear.drop(df_clear[df_clear['title']==0].index)
+df_clear = df_clear.drop(df_clear[df_clear['year']==0].index)
+df_clear = df_clear.drop(df_clear[df_clear['journal/conference']=='CoRR'].index)
+{{< /highlight >}}
+
+
+
+{{< highlight python >}}
+import numpy as np
+from pyspark.sql.types import *
+df_schema = StructType([StructField("author", ArrayType(StringType(),True), True)\
+                       ,StructField("title", StringType(), True)\
+                       ,StructField("year", IntegerType(), True)\
+                       ,StructField("journal/conference", StringType(), True)])
+sparkDF=spark.createDataFrame(df_clear,df_schema) 
+sparkDF.printSchema()
+{{< /highlight >}}
+
+
+{{< highlight python >}}
+df_articles = sparkDF.filter(sparkDF.year==2021)
+df_ars=df_articles.toPandas()
+list_a=df_ars['title'].values.tolist()
+{{< /highlight >}}
+
+TF-IDF
+{{< highlight python >}}
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+vectorizer = TfidfVectorizer()
+tf_idf = vectorizer.fit_transform(list_a)
+q = "self-attention transformer"
+qtf_idf = vectorizer.transform([q])
+res = cosine_similarity(tf_idf, qtf_idf)
+res = res.ravel().argsort()[-10:]
+result=[list_a[i] for i in res[::-1]]
+
+df_articles=df_articles.filter(F.col("title").isin(result))
+{{< /highlight >}}
+
 
 
 **Refrence**
