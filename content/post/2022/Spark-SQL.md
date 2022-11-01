@@ -484,8 +484,10 @@ df_articles=df_articles.filter(F.col("title").isin(result))
 
 
 >Ignoring papers from CoRR is ONLY applicable for pairs of papers (same title and authors) that have one record with CoRR and the other published in a conference/journal.  
->...such a time-consuming work
->Do I need to consider about the case sensitivity?? What about the order of the authors??
+
+...such a time-consuming work
+
+Do I need to consider about the case sensitivity?? What about the order of the authors??
 
 
 **Refrence**
