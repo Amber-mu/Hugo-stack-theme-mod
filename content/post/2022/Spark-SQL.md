@@ -489,6 +489,8 @@ df_articles=df_articles.filter(F.col("title").isin(result))
 
 Do I need to consider about the case sensitivity?? What about the order of the authors??
 
+And I met a supper weird problem:https://stackoverflow.com/questions/74272965/using-not-is-in-in-pyspark-and-getting-an-empty-dataframe-back
+
 
 **Refrence**
 
