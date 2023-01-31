@@ -24,3 +24,7 @@ https://www.jianshu.com/p/7f0e49b948f5
 https://zhuanlan.zhihu.com/p/463835164
 
 https://zhuanlan.zhihu.com/p/465285611
+
+https://vaisramana.github.io/2019/11/08/machine-learning-theory-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%8E%9F%E7%90%86.html
+
+https://www.bilibili.com/video/BV1Nr4y1i7or/?spm_id_from=333.337.search-card.all.click&vd_source=ea205298c5c7d22a071f198f0703a0dc
