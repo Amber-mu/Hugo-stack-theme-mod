@@ -1,7 +1,6 @@
 ---
 title: "Mood"
 description: 
-date: 2022-11-10T16:58:12+08:00
 hidden: false
 comments: true
 draft: false
