@@ -31,7 +31,6 @@ plt.plot(lowD['PC1'], y, ls='dotted',alpha = 0.4,color=color_dict[lowD[lowD['PC1
 plt.show()
 {{< /highlight >}}
 
-
 这个图color至少有三个了，但是图例是渐变颜色
 
 {{< highlight python >}}
